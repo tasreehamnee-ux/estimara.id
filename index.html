@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استمارة (إخراج / ادخال) مواد وقائمة المواد - وزارة الشباب والرياضة</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', Arial, sans-serif;
+            background: #e0e0e0;
+            padding: 20px;
+            direction: rtl;
+            margin: 0;
+        }
+
+        /* صفحة A4 - ضبط دقيق لحجم الورقة */
+        .a4-page {
+            width: 210mm;
+            height: 297mm;
+            min-height: 297mm;
+            max-height: 297mm;
+            margin: 0 auto;
+            background: white;
+            padding: 0;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 2px solid #000;
+            page-break-after: always;
+            page-break-inside: avoid;
+        }
+
+        /* الصفحة الأخيرة لا تحتاج page-break-after */
+        .a4-page:last-child {
+            page-break-after: avoid;
+            margin-bottom: 0;
+        }
+
+        /* علامة مائية في منتصف الصفحة */
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150mm;
+            height: 150mm;
+            opacity: 0.10;
+            pointer-events: none;
+            z-index: 0;
+            background-image: url('imag.jpg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* الترويسة - الشعار في المنتصف */
+        .header {
+            position: relative;
+            height: 34mm;
+            border-bottom: 2px solid #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2mm 8mm;
+            background: white;
+            z-index: 2;
+        }
+
+        .header-text-ar {
+            text-align: right;
+            color: #000;
+            font-weight: bold;
+            font-size: 12pt;
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        .header-text-en {
+            text-align: left;
+            color: #000;
+            font-weight: bold;
+            font-size: 12pt;
+            line-height: 1.5;
+            direction: ltr;
+            flex: 1;
+        }
+
+        /* الشعار في المنتصف - مطلق */
+        .logo-center {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 3;
+        }
+
+        .logo-center img {
+            width: 30mm;
+            height: 30mm;
+            object-fit: contain;
+        }
+
+        /* العنوان الرئيسي */
+        .main-title {
+            text-align: center;
+            font-size: 15pt;
+            font-weight: bold;
+            color: #000;
+            margin: 4mm 0;
+            position: relative;
+            z-index: 2;
+            text-decoration: underline;
+        }
+
+        /* ========== الصفحة الأولى: استمارة المعلومات ========== */
+        .form-container {
+            position: relative;
+            z-index: 2;
+            padding: 0 8mm;
+            height: calc(297mm - 34mm - 10mm);
+            overflow: hidden;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5mm;
+            gap: 4mm;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .form-group.half {
+            flex: 0 0 48%;
+        }
+
+        .form-label {
+            font-weight: bold;
+            font-size: 10pt;
+            white-space: nowrap;
+            margin-left: 2mm;
+            color: #000;
+        }
+
+        .form-input {
+            flex: 1;
+            height: 8mm;
+            border: 2px solid #000;
+            padding: 0 4mm;
+            font-size: 11pt;
+            border-radius: 2mm;
+            text-align: center;
+            background-color: transparent !important;
+            color: #000;
+            min-width: 35mm;
+        }
+
+        .form-input:focus {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            outline: none;
+        }
+
+        .checkbox-row {
+            display: flex;
+            justify-content: center;
+            gap: 15mm;
+            margin: 3mm 0;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 2mm;
+        }
+
+        .checkbox-box {
+            width: 6mm;
+            height: 6mm;
+            border: 1.5px solid #000;
+            display: inline-block;
+            background: transparent;
+        }
+
+        .checkbox-label {
+            font-weight: bold;
+            font-size: 11pt;
+        }
+
+        /* مناطق التوقيع - شفافة */
+        .signatures-section {
+            display: flex;
+            justify-content: space-between;
+            gap: 4mm;
+            margin: 5mm 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .signature-box-large {
+            border: 1.5px solid #000;
+            width: 85mm;
+            height: 30mm;
+            border-radius: 5mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            text-align: center;
+            font-size: 10pt;
+            font-weight: bold;
+            background: transparent !important;
+            padding: 2mm;
+            padding-bottom: 2mm;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* الملاحظات */
+        .notes-section {
+            margin: 4mm 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .notes-title {
+            font-weight: bold;
+            font-size: 11pt;
+            margin-bottom: 2mm;
+            color: #000;
+        }
+
+        .notes-list {
+            list-style: none;
+            font-size: 9pt;
+            line-height: 1.6;
+            color: #000;
+        }
+
+        .notes-list li {
+            margin-bottom: 1mm;
+            position: relative;
+            padding-right: 4mm;
+        }
+
+        .notes-list li::before {
+            content: "❖";
+            position: absolute;
+            right: 0;
+        }
+
+        /* ========== الصفحة الثانية: استمارة القائمة ========== */
+        .page2-content {
+            position: relative;
+            z-index: 2;
+            padding: 2mm 4mm 0 4mm; /* تقليل الهامش العلوي إلى 2مم فقط */
+            height: 100%;
+        }
+
+        .page2-title {
+            text-align: center;
+            font-size: 14pt;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 2mm; /* تقليل الهامش السفلي */
+            margin-top: 0; /* إزالة الهامش العلوي */
+            position: relative;
+            z-index: 2;
+            text-decoration: underline;
+        }
+
+        .main-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0; /* إزالة الهامش العلوي للجدول */
+        }
+
+        .main-table th {
+            background: #7986cb;
+            border: 1px solid #333;
+            padding: 1mm 2mm;
+            font-size: 11pt;
+            font-weight: bold;
+            text-align: center;
+            color: #000;
+            height: 8mm; /* زيادة ارتفاع رأس الجدول قليلاً */
+        }
+
+        .main-table td {
+            border: 1px solid #333;
+            padding: 0.5mm 2mm;
+            font-size: 10pt;
+            text-align: center;
+            height: 8.5mm; /* زيادة ارتفاع الخلايا قليلاً لملء الصفحة */
+            background: transparent;
+        }
+
+        .row-number {
+            font-weight: bold;
+            color: #c62828;
+            font-size: 10pt;
+        }
+
+        .table-input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent !important;
+            text-align: center;
+            font-family: 'Cairo', Arial, sans-serif;
+            font-size: 9.5pt;
+            outline: none;
+            padding: 0;
+        }
+
+        /* تذييل الصفحة */
+        .footer {
+            position: absolute;
+            bottom: 3mm;
+            left: 5mm;
+            font-size: 8pt;
+            color: #666;
+            z-index: 2;
+        }
+
+        .footer-right {
+            position: absolute;
+            bottom: 3mm;
+            right: 5mm;
+            font-size: 8pt;
+            color: #c62828;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        /* أزرار التحكم */
+        .controls {
+            text-align: center;
+            margin: 20px;
+            direction: rtl;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Cairo', Arial;
+            font-size: 12pt;
+            font-weight: bold;
+        }
+
+        .btn-print {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-clear {
+            background: #f44336;
+            color: white;
+        }
+
+        /* إعدادات الطباعة */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            html, body {
+                background: white;
+                padding: 0;
+                margin: 0;
+                width: 210mm;
+                height: auto;
+                overflow: visible;
+            }
+
+            .a4-page {
+                box-shadow: none;
+                margin: 0 auto !important;
+                padding: 0;
+                width: 210mm !important;
+                height: 297mm !important;
+                min-height: 297mm !important;
+                max-height: 297mm !important;
+                overflow: hidden !important;
+                page-break-after: always;
+                page-break-before: avoid;
+                page-break-inside: avoid;
+            }
+
+            .a4-page:last-child {
+                page-break-after: avoid;
+            }
+
+            .controls {
+                display: none !important;
+            }
+
+            .watermark {
+                opacity: 0.10;
+            }
+
+            .main-table th {
+                background: #7986cb !important;
+            }
+
+            .signature-box-large {
+                background: transparent !important;
+            }
+        }
+
+        @media screen {
+            .a4-page {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- أزرار التحكم -->
+    <div class="controls">
+        <button class="btn btn-print" onclick="printPage()">🖨️ طباعة / حفظ PDF</button>
+        <button class="btn btn-clear" onclick="clearForm()">🗑️ مسح النموذج</button>
+    </div>
+
+    <!-- ========== الصفحة الأولى: استمارة المعلومات ========== -->
+    <div class="a4-page" id="formPage1">
+        <!-- علامة مائية في منتصف الصفحة -->
+        <div class="watermark"></div>
+
+        <!-- الترويسة -->
+        <div class="header">
+            <div class="header-text-ar">
+                <div>جمهورية العراق</div>
+                <div>وزارة الشباب والرياضة</div>
+                <div>مكتب الوزير</div>
+                <div>مكتب التصاريح الأمنية</div>
+            </div>
+
+            <div class="logo-center">
+                <img src="imag.jpg" alt="شعار الوزارة" onerror="this.style.display='none'">
+            </div>
+
+            <div class="header-text-en">
+                <div>REPUBLIC OF IRAQ</div>
+                <div>Ministry Of Youth & Sport</div>
+                <div>Minister Office</div>
+                <div>Security Permits Office</div>
+            </div>
+        </div>
+
+        <!-- العنوان الرئيسي -->
+        <div class="main-title">استمارة (إخراج / ادخال) مواد</div>
+
+        <!-- الحقول -->
+        <div class="form-container">
+            <!-- الصف الأول -->
+            <div class="form-row">
+                <div class="form-group half">
+                    <label class="form-label">اسم المخول الثلاثي:</label>
+                    <input type="text" class="form-input" id="authName" autocomplete="off">
+                </div>
+                <div class="form-group half">
+                    <label class="form-label">رقم هوية المخول:</label>
+                    <input type="text" class="form-input" id="authId" autocomplete="off">
+                </div>
+            </div>
+
+            <!-- الصف الثاني -->
+            <div class="form-row">
+                <div class="form-group half">
+                    <label class="form-label">اسم السائق الثلاثي:</label>
+                    <input type="text" class="form-input" id="driverName" autocomplete="off">
+                </div>
+                <div class="form-group half">
+                    <label class="form-label">رقم هوية السائق:</label>
+                    <input type="text" class="form-input" id="driverId" autocomplete="off">
+                </div>
+            </div>
+
+            <!-- الصف الثالث -->
+            <div class="form-row">
+                <div class="form-group half">
+                    <label class="form-label">نوع العجلة:</label>
+                    <input type="text" class="form-input" id="vehicleType" autocomplete="off">
+                </div>
+                <div class="form-group half">
+                    <label class="form-label">رقم العجلة:</label>
+                    <input type="text" class="form-input" id="vehicleNumber" autocomplete="off">
+                </div>
+            </div>
+
+            <!-- الصف الرابع -->
+            <div class="form-row">
+                <div class="form-group half">
+                    <label class="form-label">منشأ المواد:</label>
+                    <input type="text" class="form-input" id="materialSource" autocomplete="off">
+                </div>
+                <div class="form-group half">
+                    <label class="form-label">تاريخ (ادخال / خروج) المواد:</label>
+                    <input type="text" class="form-input" id="date" autocomplete="off">
+                </div>
+            </div>
+
+            <!-- الصف الخامس -->
+            <div class="form-row">
+                <div class="form-group half">
+                    <label class="form-label">عدد المواد رقماً:</label>
+                    <input type="text" class="form-input" id="materialCountNum" autocomplete="off">
+                </div>
+                <div class="form-group half">
+                    <label class="form-label">عدد المواد كتابةً:</label>
+                    <input type="text" class="form-input" id="materialCountText" autocomplete="off">
+                </div>
+            </div>
+
+            <!-- خانات الاختيار -->
+            <div class="checkbox-row">
+                <div class="checkbox-group">
+                    <span class="checkbox-box"></span>
+                    <span class="checkbox-label">ادخال:</span>
+                </div>
+                <div class="checkbox-group">
+                    <span class="checkbox-box"></span>
+                    <span class="checkbox-label">إخراج:</span>
+                </div>
+            </div>
+
+            <!-- مناطق التوقيع -->
+            <div class="signatures-section">
+                <div class="signature-box-large">
+                    ختم وتوقيع مدير<br>مكتب التصاريح الأمنية
+                </div>
+                <div class="signature-box-large">
+                    ختم وتوقيع<br>مدير الدائرة
+                </div>
+            </div>
+
+            <!-- الملاحظات -->
+            <div class="notes-section">
+                <div class="notes-title">ملاحظة :-</div>
+                <ul class="notes-list">
+                    <li>يرفق الاستمارة بكتاب طلب رسمي من الدائرة المعنية ومختومة من نفس الدائرة.</li>
+                    <li>يرفق نسخة من هوية المخول وهوية السائق وسنوية العجلة.</li>
+                    <li>في حال دخول اشخاص لغرض اقامة نشاط او وحدة تدريبية كلاعبي او اعضاء الفرق والاندية والمنتخبات / يرفق قائمة بالأسماء ونسخة من هوياتهم.</li>
+                    <li>يكون تقديم الطلب مسبقاً قبل يومين.</li>
+                    <li>يسمح بدخول وخروج المواد لغاية الساعة السادسة مساءاً.</li>
+                    <li>يمنع ادخال واخراج المواد في أيام العطل الرسمية.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- تذييل الصفحة -->
+        <div class="footer">
+            SPD-QP-01,03,01-15 JUN.2023
+        </div>
+    </div>
+
+    <!-- ========== الصفحة الثانية: استمارة القائمة ========== -->
+    <div class="a4-page" id="formPage2">
+        <!-- علامة مائية في منتصف الصفحة -->
+        <div class="watermark"></div>
+
+        <!-- محتوى الصفحة الثانية - يبدأ من الأعلى مباشرة -->
+        <div class="page2-content">
+            <!-- العنوان الرئيسي -->
+            <div class="page2-title">قائمة المواد</div>
+
+            <!-- الجدول -->
+            <table class="main-table">
+                <thead>
+                    <tr>
+                        <th style="width: 8%;">ت</th>
+                        <th style="width: 37%;">اسم المادة</th>
+                        <th style="width: 55%;">الملاحظات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="row-number">١</td><td><input type="text" class="table-input" id="item1"></td><td><input type="text" class="table-input" id="note1"></td></tr>
+                    <tr><td class="row-number">٢</td><td><input type="text" class="table-input" id="item2"></td><td><input type="text" class="table-input" id="note2"></td></tr>
+                    <tr><td class="row-number">٣</td><td><input type="text" class="table-input" id="item3"></td><td><input type="text" class="table-input" id="note3"></td></tr>
+                    <tr><td class="row-number">٤</td><td><input type="text" class="table-input" id="item4"></td><td><input type="text" class="table-input" id="note4"></td></tr>
+                    <tr><td class="row-number">٥</td><td><input type="text" class="table-input" id="item5"></td><td><input type="text" class="table-input" id="note5"></td></tr>
+                    <tr><td class="row-number">٦</td><td><input type="text" class="table-input" id="item6"></td><td><input type="text" class="table-input" id="note6"></td></tr>
+                    <tr><td class="row-number">٧</td><td><input type="text" class="table-input" id="item7"></td><td><input type="text" class="table-input" id="note7"></td></tr>
+                    <tr><td class="row-number">٨</td><td><input type="text" class="table-input" id="item8"></td><td><input type="text" class="table-input" id="note8"></td></tr>
+                    <tr><td class="row-number">٩</td><td><input type="text" class="table-input" id="item9"></td><td><input type="text" class="table-input" id="note9"></td></tr>
+                    <tr><td class="row-number">١٠</td><td><input type="text" class="table-input" id="item10"></td><td><input type="text" class="table-input" id="note10"></td></tr>
+                    <tr><td class="row-number">١١</td><td><input type="text" class="table-input" id="item11"></td><td><input type="text" class="table-input" id="note11"></td></tr>
+                    <tr><td class="row-number">١٢</td><td><input type="text" class="table-input" id="item12"></td><td><input type="text" class="table-input" id="note12"></td></tr>
+                    <tr><td class="row-number">١٣</td><td><input type="text" class="table-input" id="item13"></td><td><input type="text" class="table-input" id="note13"></td></tr>
+                    <tr><td class="row-number">١٤</td><td><input type="text" class="table-input" id="item14"></td><td><input type="text" class="table-input" id="note14"></td></tr>
+                    <tr><td class="row-number">١٥</td><td><input type="text" class="table-input" id="item15"></td><td><input type="text" class="table-input" id="note15"></td></tr>
+                    <tr><td class="row-number">١٦</td><td><input type="text" class="table-input" id="item16"></td><td><input type="text" class="table-input" id="note16"></td></tr>
+                    <tr><td class="row-number">١٧</td><td><input type="text" class="table-input" id="item17"></td><td><input type="text" class="table-input" id="note17"></td></tr>
+                    <tr><td class="row-number">١٨</td><td><input type="text" class="table-input" id="item18"></td><td><input type="text" class="table-input" id="note18"></td></tr>
+                    <tr><td class="row-number">١٩</td><td><input type="text" class="table-input" id="item19"></td><td><input type="text" class="table-input" id="note19"></td></tr>
+                    <tr><td class="row-number">٢٠</td><td><input type="text" class="table-input" id="item20"></td><td><input type="text" class="table-input" id="note20"></td></tr>
+                    <tr><td class="row-number">٢١</td><td><input type="text" class="table-input" id="item21"></td><td><input type="text" class="table-input" id="note21"></td></tr>
+                    <tr><td class="row-number">٢٢</td><td><input type="text" class="table-input" id="item22"></td><td><input type="text" class="table-input" id="note22"></td></tr>
+                    <tr><td class="row-number">٢٣</td><td><input type="text" class="table-input" id="item23"></td><td><input type="text" class="table-input" id="note23"></td></tr>
+                    <tr><td class="row-number">٢٤</td><td><input type="text" class="table-input" id="item24"></td><td><input type="text" class="table-input" id="note24"></td></tr>
+                    <tr><td class="row-number">٢٥</td><td><input type="text" class="table-input" id="item25"></td><td><input type="text" class="table-input" id="note25"></td></tr>
+                </tbody>
+            </table>
+
+            <!-- مناطق التوقيع -->
+            <div class="signatures-section" style="margin-top: 4mm;">
+                <div class="signature-box-large" style="height: 26mm; font-size: 10pt;">
+                    ختم وتوقيع مدير قسم المخازن في حال<br>
+                    استلام وتسليم مواد من والى المخازن
+                </div>
+                <div class="signature-box-large" style="height: 26mm; font-size: 10pt;">
+                    اسم وتوقيع موظف التصاريح في الباب<br>
+                    الرئيسي
+                </div>
+            </div>
+        </div>
+
+        <!-- تذييل الصفحة -->
+        <div class="footer">
+            SPD-WI-01,01,01 02 AUG.2023
+        </div>
+        <div class="footer-right">
+            HSV/m//R
+        </div>
+    </div>
+
+    <script>
+        function clearForm() {
+            if(confirm('هل أنت متأكد من مسح جميع البيانات في الاستمارتين؟')) {
+                // مسح حقول الصفحة الأولى
+                document.querySelectorAll('.form-input').forEach(input => input.value = '');
+                // مسح حقول الصفحة الثانية
+                document.querySelectorAll('.table-input').forEach(input => input.value = '');
+            }
+        }
+
+        function printPage() {
+            window.print();
+        }
+
+        // اختصار Ctrl+P للطباعة
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                window.print();
+            }
+        });
+    </script>
+
+</body>
+</html>
