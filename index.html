@@ -218,14 +218,15 @@
             flex-direction: column;
             justify-content: flex-end;
             align-items: center;
-            text-align: center;
+             text-align: center;
             font-size: 9pt;
             font-weight: bold;
             background: transparent !important;
-            padding: 2mm;
-            padding-bottom: 2mm;
+             padding: 2mm;
+            padding-bottom:2mm;
             position: relative;
             z-index: 2;
+            white-space: nowrap;
         }
 
         /* الملاحظات */
@@ -265,7 +266,7 @@
         .page2-content {
             position: relative;
             z-index: 2;
-            padding: 2mm 4mm 0 4mm; /* تقليل الهامش العلوي إلى 2مم فقط */
+            padding: 2mm 4mm 0 4mm;
             height: 100%;
         }
 
@@ -274,8 +275,8 @@
             font-size: 14pt;
             font-weight: bold;
             color: #000;
-            margin-bottom: 2mm; /* تقليل الهامش السفلي */
-            margin-top: 0; /* إزالة الهامش العلوي */
+            margin-bottom: 2mm;
+            margin-top: 0;
             position: relative;
             z-index: 2;
             text-decoration: underline;
@@ -284,7 +285,7 @@
         .main-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 0; /* إزالة الهامش العلوي للجدول */
+            margin-top: 0;
         }
 
         .main-table th {
@@ -295,7 +296,7 @@
             font-weight: bold;
             text-align: center;
             color: #000;
-            height: 8mm; /* زيادة ارتفاع رأس الجدول قليلاً */
+            height: 8mm;
         }
 
         .main-table td {
@@ -303,7 +304,7 @@
             padding: 0.5mm 2mm;
             font-size: 10pt;
             text-align: center;
-            height: 8.5mm; /* زيادة ارتفاع الخلايا قليلاً لملء الصفحة */
+            height: 8.5mm;
             background: transparent;
         }
 
@@ -370,6 +371,11 @@
 
         .btn-clear {
             background: #f44336;
+            color: white;
+        }
+
+        .btn-save {
+            background: #2196f3;
             color: white;
         }
 
@@ -441,8 +447,9 @@
 
     <!-- أزرار التحكم -->
     <div class="controls">
-        <button class="btn btn-print" onclick="printPage()">🖨️ طباعة / حفظ PDF</button>
-        <button class="btn btn-clear" onclick="clearForm()">🗑️ مسح النموذج</button>
+        <button class="btn btn-save" onclick="saveData()">💾 حفظ البيانات</button>
+        <button class="btn btn-print" onclick="printPage()">🖨️ طباعة البيانات</button>
+        <button class="btn btn-clear" onclick="clearForm()">🗑️ مسح البيانات</button>
     </div>
 
     <!-- ========== الصفحة الأولى: استمارة المعلومات ========== -->
@@ -548,13 +555,13 @@
                 </div>
             </div>
 
-            <!-- مناطق التوقيع -->
+            <!-- مناطق التوقيع - معدلة حسب الطلب -->
             <div class="signatures-section">
                 <div class="signature-box-large">
-                    ختم وتوقيع مدير<br>مكتب التصاريح الأمنية
+                    ختم وتوقيع مدير الدائرة
                 </div>
                 <div class="signature-box-large">
-                    ختم وتوقيع<br>مدير الدائرة
+                    ختم وتوقيع مدير مكتب التصاريح الأمنية
                 </div>
             </div>
 
@@ -626,15 +633,13 @@
                 </tbody>
             </table>
 
-            <!-- مناطق التوقيع -->
+            <!-- مناطق التوقيع - معدلة لتكون الكتابة محصورة داخل الصندوق -->
             <div class="signatures-section" style="margin-top: 4mm;">
-                <div class="signature-box-large" style="height: 26mm; font-size: 10pt;">
-                    ختم وتوقيع مدير قسم المخازن في حال<br>
-                    استلام وتسليم مواد من والى المخازن
+                <div class="signature-box-large" style="height: 26mm; font-size: 9pt; white-space: normal; justify-content: center; padding: 2mm;">
+                    ختم وتوقيع مدير قسم المخازن في حال استلام وتسليم مواد من والى المخازن
                 </div>
-                <div class="signature-box-large" style="height: 26mm; font-size: 10pt;">
-                    اسم وتوقيع موظف التصاريح في الباب<br>
-                    الرئيسي
+                <div class="signature-box-large" style="height: 26mm; font-size: 9pt; white-space: normal; justify-content: center; padding: 2mm;">
+                    اسم وتوقيع موظف التصاريح في الباب الرئيسي
                 </div>
             </div>
         </div>
@@ -649,15 +654,60 @@
     </div>
 
     <script>
+        // حفظ البيانات في LocalStorage
+        function saveData() {
+            const data = {};
+
+            // حفظ حقول الصفحة الأولى
+            document.querySelectorAll('.form-input').forEach(input => {
+                data[input.id] = input.value;
+            });
+
+            // حفظ حقول الصفحة الثانية
+            document.querySelectorAll('.table-input').forEach(input => {
+                data[input.id] = input.value;
+            });
+
+            localStorage.setItem('ministryFormData', JSON.stringify(data));
+            alert('تم حفظ البيانات بنجاح! ✅');
+        }
+
+        // تحميل البيانات من LocalStorage
+        function loadData() {
+            const savedData = localStorage.getItem('ministryFormData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+
+                // استرجاع حقول الصفحة الأولى
+                document.querySelectorAll('.form-input').forEach(input => {
+                    if (data[input.id]) {
+                        input.value = data[input.id];
+                    }
+                });
+
+                // استرجاع حقول الصفحة الثانية
+                document.querySelectorAll('.table-input').forEach(input => {
+                    if (data[input.id]) {
+                        input.value = data[input.id];
+                    }
+                });
+            }
+        }
+
+        // مسح البيانات
         function clearForm() {
             if(confirm('هل أنت متأكد من مسح جميع البيانات في الاستمارتين؟')) {
                 // مسح حقول الصفحة الأولى
                 document.querySelectorAll('.form-input').forEach(input => input.value = '');
                 // مسح حقول الصفحة الثانية
                 document.querySelectorAll('.table-input').forEach(input => input.value = '');
+                // مسح من LocalStorage
+                localStorage.removeItem('ministryFormData');
+                alert('تم مسح جميع البيانات! 🗑️');
             }
         }
 
+        // طباعة البيانات
         function printPage() {
             window.print();
         }
@@ -669,6 +719,9 @@
                 window.print();
             }
         });
+
+        // تحميل البيانات عند فتح الصفحة
+        window.addEventListener('load', loadData);
     </script>
 
 </body>
