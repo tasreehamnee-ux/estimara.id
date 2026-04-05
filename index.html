@@ -27,12 +27,12 @@
             height: 297mm;
             margin: 0 auto;
             background: white;
-            padding: 8mm;  /* ← هوامش داخلية 10مم من جميع الجهات */
+            padding: 6mm;
             position: relative;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             overflow: hidden;
             border: 2px solid #000;
-            box-sizing: border-box;  /* ← مهم: يضمن أن الـ padding ضمن الحجم الكلي */
+            box-sizing: border-box;
             page-break-after: always;
             page-break-inside: avoid;
         }
@@ -49,7 +49,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 140mm;  /* ← تقليل الحجم قليلاً */
+            width: 140mm;
             height: 140mm;
             opacity: 0.10;
             pointer-events: none;
@@ -63,15 +63,15 @@
         /* الترويسة - تقليل الارتفاع */
         .header {
             position: relative;
-            height: 30mm;  /* ← تقليل من 33mm */
+            height: 30mm;
             border-bottom: 2px solid #000;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 3mm 5mm;  /* ← تقليل الحشو الجانبي */
+            padding: 3mm 5mm;
             background: white;
             z-index: 2;
-            width: calc(100% - 8mm);  /* ← تقليل العرض */
+            width: calc(100% - 8mm);
             margin: 0 auto;
         }
 
@@ -79,7 +79,7 @@
             text-align: right;
             color: #000;
             font-weight: bold;
-            font-size: 11pt;  /* ← تقليل من 12pt */
+            font-size: 11pt;
             line-height: 1.5;
             flex: 1;
         }
@@ -88,7 +88,7 @@
             text-align: left;
             color: #000;
             font-weight: bold;
-            font-size: 11pt;  /* ← تقليل من 12pt */
+            font-size: 11pt;
             line-height: 1.4;
             direction: ltr;
             flex: 1;
@@ -105,18 +105,18 @@
         }
 
         .logo-center img {
-            width: 28mm;  /* ← تقليل من 30mm */
-            height: 30mm; /* ← تقليل من 33mm */
+            width: 28mm;
+            height: 30mm;
             object-fit: contain;
         }
 
         /* العنوان الرئيسي */
         .main-title {
             text-align: center;
-            font-size: 13pt;  /* ← تقليل من 15pt */
+            font-size: 13pt;
             font-weight: bold;
             color: #000;
-            margin: 4mm 0;  /* ← تقليل من 4mm */
+            margin: 4mm 0;
             position: relative;
             z-index: 2;
             text-decoration: underline;
@@ -126,17 +126,17 @@
         .form-container {
             position: relative;
             z-index: 2;
-            padding: 0 5mm;  /* ← تقليل الحشو الجانبي */
-            height: calc(297mm - 30mm - 30mm);  /* ← تعديل الارتفاع */
+            padding: 0 5mm;
+            height: calc(297mm - 30mm - 30mm);
             overflow: hidden;
-            width: calc(100% - 6mm);  /* ← تقليل العرض */
+            width: calc(100% - 8mm);
             margin: 0 auto;
         }
 
         .form-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5mm;  /* ← تقليل من 5mm */
+            margin-bottom: 5mm;
             gap: 3mm;
         }
 
@@ -150,6 +150,15 @@
             flex: 0 0 48%;
         }
 
+        /* تقليل عرض المجموعة الثانية في الصف الرابع */
+        .form-group.date-group {
+            flex: 0 0 42%; /* تقليل العرض */
+        }
+
+        .form-group.source-group {
+            flex: 0 0 54%; /* زيادة العرض للتعويض */
+        }
+
         .form-label {
             font-weight: bold;
             font-size: 9pt;
@@ -158,17 +167,28 @@
             color: #000;
         }
 
+        /* تقليل حجم خط التسمية للتاريخ */
+        .form-label.small-label {
+            font-size: 8.5pt;
+        }
+
         .form-input {
             flex: 1;
-            height: 8mm;  /* ← تقليل من 8mm */
+            height: 8mm;
             border: 2px solid #000;
-            padding: 0 4mm;  /* ← تقليل من 4mm */
-            font-size: 11pt;  /* ← تقليل من 12pt */
+            padding: 0 4mm;
+            font-size: 11pt;
             border-radius: 2mm;
             text-align: center;
             background-color: transparent !important;
             color: #000;
-            min-width: 30mm;  /* ← تقليل من 35mm */
+            min-width: 30mm;
+        }
+
+        /* تقليل عرض حقل التاريخ */
+        .form-input.date-input {
+            min-width: 20mm;
+            max-width: 35mm;
         }
 
         .form-input:focus {
@@ -190,8 +210,8 @@
         }
 
         .checkbox-box {
-            width: 5mm;  /* ← تقليل من 6mm */
-            height: 5mm; /* ← تقليل من 6mm */
+            width: 5mm;
+            height: 5mm;
             border: 1.5px solid #000;
             display: inline-block;
             background: transparent;
@@ -199,24 +219,24 @@
 
         .checkbox-label {
             font-weight: bold;
-            font-size: 10pt;  /* ← تقليل من 11pt */
+            font-size: 10pt;
         }
 
         /* مناطق التوقيع - تقليل الحجم */
         .signatures-section {
             display: flex;
             justify-content: space-between;
-            gap: 5mm;  /* ← تقليل من 4mm */
-            margin: 4mm auto;  /* ← تقليل من 5mm وتوسيط */
-            width: calc(100% - 6mm);  /* ← تقليل العرض */
+            gap: 5mm;
+            margin: 4mm auto;
+            width: calc(100% - 6mm);
             position: relative;
             z-index: 2;
         }
 
         .signature-box-large {
             border: 1.5px solid #000;
-            width: 80mm;  /* ← تقليل من 85mm */
-            height: 30mm;  /* ← تقليل من 30mm */
+            width: 80mm;
+            height: 30mm;
             border-radius: 5mm;
             display: flex;
             flex-direction: column;
@@ -234,23 +254,23 @@
 
         /* الملاحظات */
         .notes-section {
-            margin: 4mm auto;  /* ← تقليل من 4mm وتوسيط */
-            width: calc(100% - 8mm);  /* ← تقليل العرض */
+            margin: 4mm auto;
+            width: calc(100% - 6mm);
             position: relative;
             z-index: 2;
         }
 
         .notes-title {
             font-weight: bold;
-            font-size: 11pt;  /* ← تقليل من 11pt */
+            font-size: 11pt;
             margin-bottom: 2mm;
             color: #000;
         }
 
         .notes-list {
             list-style: none;
-            font-size: 10pt;  /* ← تقليل من 9pt */
-            line-height: 1.5;  /* ← تقليل من 1.6 */
+            font-size: 10pt;
+            line-height: 1.5;
             color: #000;
         }
 
@@ -270,9 +290,9 @@
         .page2-content {
             position: relative;
             z-index: 2;
-            padding: 2mm;  /* ← تقليل الحشو */
-            height: calc(100% - 20mm);  /* ← ترك مسافة للهوامش */
-            width: calc(100% - 8mm);   /* ← تقليل العرض */
+            padding: 2mm;
+            height: calc(100% - 20mm);
+            width: calc(100% - 6mm);
             margin: 0 auto;
         }
 
@@ -290,7 +310,7 @@
 
         /* الجدول - تقليل العرض */
         .main-table {
-            width: 98%;  /* ← أقل من العرض الكامل */
+            width: 98%;
             margin: 0 auto;
             border-collapse: collapse;
         }
@@ -298,27 +318,27 @@
         .main-table th {
             background: #7986cb;
             border: 1px solid #333;
-            padding: 0.5mm 1mm;  /* ← تقليل من 1mm 2mm */
-            font-size: 10pt;  /* ← تقليل من 11pt */
+            padding: 0.5mm 1mm;
+            font-size: 10pt;
             font-weight: bold;
             text-align: center;
             color: #000;
-            height: 8mm;  /* ← تقليل من 8mm */
+            height: 7mm;
         }
 
         .main-table td {
             border: 1px solid #333;
-            padding: 0.3mm 1mm;  /* ← تقليل من 0.5mm 2mm */
-            font-size: 9pt;  /* ← تقليل من 10pt */
+            padding: 0.3mm 1mm;
+            font-size: 9pt;
             text-align: center;
-            height: 7mm;  /* ← تقليل من 8mm */
+            height: 7mm;
             background: transparent;
         }
 
         .row-number {
             font-weight: bold;
             color: #c62828;
-            font-size: 9pt;  /* ← تقليل من 10pt */
+            font-size: 9pt;
         }
 
         .table-input {
@@ -328,7 +348,7 @@
             background: transparent !important;
             text-align: center;
             font-family: 'Cairo', Arial, sans-serif;
-            font-size: 9pt;  /* ← تقليل من 10pt */
+            font-size: 9pt;
             outline: none;
             padding: 0;
         }
@@ -336,8 +356,8 @@
         /* تذييل الصفحة */
         .footer {
             position: absolute;
-            bottom: 5mm;  /* ← تعديل المسافة */
-            left: 15mm;   /* ← تعديل بسبب الـ padding الجديد */
+            bottom: 5mm;
+            left: 15mm;
             font-size: 8pt;
             color: #666;
             z-index: 2;
@@ -345,8 +365,8 @@
 
         .footer-right {
             position: absolute;
-            bottom: 5mm;  /* ← تعديل المسافة */
-            right: 15mm;  /* ← تعديل بسبب الـ padding الجديد */
+            bottom: 5mm;
+            right: 15mm;
             font-size: 8pt;
             color: #c62828;
             font-weight: bold;
@@ -411,7 +431,7 @@
             .a4-page {
                 box-shadow: none;
                 margin: 0 auto !important;
-                padding: 7mm !important;  /* ← الحفاظ على الهوامش في الطباعة */
+                padding: 7mm !important;
                 width: 210mm !important;
                 height: 297mm !important;
                 overflow: hidden !important;
@@ -431,7 +451,7 @@
 
             .watermark {
                 opacity: 0.10;
-                width: 130mm !important;  /* ← تقليل في الطباعة */
+                width: 130mm !important;
                 height: 130mm !important;
             }
 
@@ -443,7 +463,6 @@
                 background: transparent !important;
             }
 
-            /* الحفاظ على التنسيق في الطباعة */
             .header, .form-container, .signatures-section, .notes-section {
                 width: calc(100% - 7mm) !important;
             }
@@ -455,7 +474,6 @@
             }
         }
     </style>
-<base target="_blank">
 </head>
 <body>
 
@@ -533,15 +551,15 @@
                 </div>
             </div>
 
-            <!-- الصف الرابع -->
+            <!-- الصف الرابع - تم تعديله -->
             <div class="form-row">
-                <div class="form-group half">
+                <div class="form-group source-group">
                     <label class="form-label">منشأ المواد:</label>
                     <input type="text" class="form-input" id="materialSource" autocomplete="off">
                 </div>
-                <div class="form-group half">
-                    <label class="form-label">تاريخ (ادخال / خروج) المواد:</label>
-                    <input type="text" class="form-input" id="date" autocomplete="off">
+                <div class="form-group date-group">
+                    <label class="form-label small-label">تاريخ (ادخال/خروج) المواد:</label>
+                    <input type="text" class="form-input date-input" id="date" autocomplete="off">
                 </div>
             </div>
 
