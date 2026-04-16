@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>استمارة (إخراج / ادخال) مواد وقائمة المواد - وزارة الشباب والرياضة</title>
+    <!-- مكتبة jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
 
@@ -152,11 +155,11 @@
 
         /* تقليل عرض المجموعة الثانية في الصف الرابع */
         .form-group.date-group {
-            flex: 0 0 42%; /* تقليل العرض */
+            flex: 0 0 42%;
         }
 
         .form-group.source-group {
-            flex: 0 0 54%; /* زيادة العرض للتعويض */
+            flex: 0 0 54%;
         }
 
         .form-label {
@@ -196,6 +199,7 @@
             outline: none;
         }
 
+        /* ===== تعديل خانات الاختيار ===== */
         .checkbox-row {
             display: flex;
             justify-content: center;
@@ -209,17 +213,35 @@
             gap: 2mm;
         }
 
+        /* إخفاء الـ checkbox الأصلي */
+        .checkbox-group input[type="radio"] {
+            display: none;
+        }
+
+        /* مربع الاختيار المخصص */
         .checkbox-box {
             width: 5mm;
             height: 5mm;
             border: 1.5px solid #000;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             background: transparent;
+            cursor: pointer;
+            font-size: 8pt;
+            font-weight: bold;
+            color: #000;
+        }
+
+        /* عند تحديد الـ radio */
+        .checkbox-group input[type="radio"]:checked + .checkbox-box::after {
+            content: "✓";
         }
 
         .checkbox-label {
             font-weight: bold;
             font-size: 10pt;
+            cursor: pointer;
         }
 
         /* مناطق التوقيع - تقليل الحجم */
@@ -378,17 +400,25 @@
             text-align: center;
             margin: 20px;
             direction: rtl;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .btn {
             padding: 10px 20px;
-            margin: 5px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-family: 'Cairo', Arial;
             font-size: 12pt;
             font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
         }
 
         .btn-print {
@@ -403,6 +433,12 @@
 
         .btn-save {
             background: #2196f3;
+            color: white;
+        }
+
+        /* زر PDF جديد */
+        .btn-pdf {
+            background: #ff5722;
             color: white;
         }
 
@@ -466,6 +502,21 @@
             .header, .form-container, .signatures-section, .notes-section {
                 width: calc(100% - 7mm) !important;
             }
+
+            /* ===== الحفاظ على حجم خانات الاختيار عند الطباعة ===== */
+            .checkbox-box {
+                width: 5mm !important;
+                height: 5mm !important;
+                border: 1.5px solid #000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .checkbox-group input[type="radio"]:checked + .checkbox-box::after {
+                content: "✓" !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
         }
 
         @media screen {
@@ -474,12 +525,14 @@
             }
         }
     </style>
+<base target="_blank">
 </head>
 <body>
 
     <!-- أزرار التحكم -->
     <div class="controls">
         <button class="btn btn-save" onclick="saveData()">💾 حفظ البيانات</button>
+        <button class="btn btn-pdf" onclick="saveAsPDF()">📄 حفظ PDF</button>
         <button class="btn btn-print" onclick="printPage()">🖨️ طباعة البيانات</button>
         <button class="btn btn-clear" onclick="clearForm()">🗑️ مسح البيانات</button>
     </div>
@@ -575,16 +628,18 @@
                 </div>
             </div>
 
-            <!-- خانات الاختيار -->
+            <!-- ===== خانات الاختيار المعدلة ===== -->
             <div class="checkbox-row">
-                <div class="checkbox-group">
+                <label class="checkbox-group">
+                    <input type="radio" name="entryExit" value="entry" id="entryCheck">
                     <span class="checkbox-box"></span>
                     <span class="checkbox-label">ادخال:</span>
-                </div>
-                <div class="checkbox-group">
+                </label>
+                <label class="checkbox-group">
+                    <input type="radio" name="entryExit" value="exit" id="exitCheck">
                     <span class="checkbox-box"></span>
                     <span class="checkbox-label">إخراج:</span>
-                </div>
+                </label>
             </div>
 
             <!-- مناطق التوقيع -->
@@ -700,6 +755,12 @@
                 data[input.id] = input.value;
             });
 
+            // حفظ خانة الاختيار
+            const selectedRadio = document.querySelector('input[name="entryExit"]:checked');
+            if (selectedRadio) {
+                data.entryExit = selectedRadio.value;
+            }
+
             localStorage.setItem('ministryFormData', JSON.stringify(data));
             alert('تم حفظ البيانات بنجاح! ✅');
         }
@@ -723,6 +784,14 @@
                         input.value = data[input.id];
                     }
                 });
+
+                // استرجاع خانة الاختيار
+                if (data.entryExit) {
+                    const radio = document.querySelector(`input[name="entryExit"][value="${data.entryExit}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                    }
+                }
             }
         }
 
@@ -733,6 +802,8 @@
                 document.querySelectorAll('.form-input').forEach(input => input.value = '');
                 // مسح حقول الصفحة الثانية
                 document.querySelectorAll('.table-input').forEach(input => input.value = '');
+                // مسح خانة الاختيار
+                document.querySelectorAll('input[name="entryExit"]').forEach(radio => radio.checked = false);
                 // مسح من LocalStorage
                 localStorage.removeItem('ministryFormData');
                 alert('تم مسح جميع البيانات! 🗑️');
@@ -742,6 +813,75 @@
         // طباعة البيانات
         function printPage() {
             window.print();
+        }
+
+        // ===== حفظ كـ PDF =====
+        async function saveAsPDF() {
+            const { jsPDF } = window.jspdf;
+
+            // إظهار رسالة انتظار
+            const btn = document.querySelector('.btn-pdf');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ جاري الحفظ...';
+            btn.disabled = true;
+
+            try {
+                // إنشاء PDF جديد
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4',
+                    putOnlyUsedFonts: true,
+                    floatPrecision: 16
+                });
+
+                // تحويل الصفحتين إلى صور
+                const page1 = document.getElementById('formPage1');
+                const page2 = document.getElementById('formPage2');
+
+                // الصفحة الأولى
+                const canvas1 = await html2canvas(page1, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    logging: false
+                });
+
+                const imgData1 = canvas1.toDataURL('image/jpeg', 0.95);
+                pdf.addImage(imgData1, 'JPEG', 0, 0, 210, 297);
+
+                // الصفحة الثانية
+                pdf.addPage();
+                const canvas2 = await html2canvas(page2, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    logging: false
+                });
+
+                const imgData2 = canvas2.toDataURL('image/jpeg', 0.95);
+                pdf.addImage(imgData2, 'JPEG', 0, 0, 210, 297);
+
+                // تحديد اسم الملف
+                const date = new Date().toISOString().slice(0,10);
+                const authName = document.getElementById('authName').value || 'مجهول';
+                const fileName = `استمارة_مواد_${authName}_${date}.pdf`;
+
+                // حفظ الملف
+                pdf.save(fileName);
+
+                alert('تم حفظ الملف بنجاح! 📄');
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء حفظ الملف. يرجى المحاولة مرة أخرى.');
+            } finally {
+                // إعادة الزر لوضعه الطبيعي
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
 
         // اختصار Ctrl+P للطباعة
