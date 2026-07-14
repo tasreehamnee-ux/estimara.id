@@ -762,6 +762,31 @@
             }
 
             localStorage.setItem('ministryFormData', JSON.stringify(data));
+            
+            // === إرسال البيانات إلى Firebase ===
+            try {
+                // تكييف البيانات لتعمل مع لوحة التحكم (نستخدم الحقول الأساسية)
+                const firebaseData = {
+                    formName: "إدخال وإخراج المواد",
+                    fullname: data['authName'] || 'مجهول', 
+                    department: data['vehicleType'] ? (data['vehicleType'] + ' - ' + (data['vehicleNumber']||'')) : 'غير محدد',
+                    jobtitle: data['driverName'] ? ('السائق: ' + data['driverName']) : 'غير محدد',
+                    mobile: data.entryExit === 'entry' ? 'إدخال مواد' : (data.entryExit === 'exit' ? 'إخراج مواد' : ''),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    ...data
+                };
+                
+                db.collection("ministry_employees").add(firebaseData).then(() => {
+                    alert("تم إرسال الاستمارة بنجاح إلى قاعدة البيانات!");
+                    window.location.href = "forms-dashboard.html";
+                }).catch((error) => {
+                    console.error("خطأ في الإرسال: ", error);
+                    alert("حدث خطأ أثناء إرسال الاستمارة: " + error.message);
+                });
+            } catch(e) {
+                console.error("Firebase error: ", e);
+            }
+
             alert('تم حفظ البيانات بنجاح! ✅');
         }
 
@@ -896,5 +921,27 @@
         window.addEventListener('load', loadData);
     </script>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // إعدادات Firebase الخاصة بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdKLNZenjeOjMPez9-XXzbCA5wBw8WfAg",
+            authDomain: "mawkei.firebaseapp.com",
+            projectId: "mawkei",
+            storageBucket: "mawkei.firebasestorage.app",
+            messagingSenderId: "302655443025",
+            appId: "1:302655443025:web:b06312faf0e1782f7c6870",
+            measurementId: "G-JNGE8W27G3"
+        };
+
+        // تهيئة Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+    </script>
 </body>
 </html>
