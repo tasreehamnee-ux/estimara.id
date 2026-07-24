@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - استمارات المواد</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --white: #ffffff;
+            --text-dark: #1f2937;
+            --text-gray: #6b7280;
+            --text-light: #9ca3af;
+            --border-color: #e5e7eb;
+            --yellow-light: #fef3c7;
+            --yellow-dark: #d97706;
+            --green-light: #d1fae5;
+            --green-dark: #059669;
+            --primary: #3b82f6;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header Card */
+        .header-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 24px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            margin-bottom: 24px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-icon {
+            background: var(--yellow-light);
+            color: var(--yellow-dark);
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .header-text h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .header-text p {
+            font-size: 0.95rem;
+            color: var(--text-gray);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .badge-status {
+            background: var(--green-light);
+            color: var(--green-dark);
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #a7f3d0;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--green-dark);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(5, 150, 105, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(5, 150, 105, 0); }
+        }
+
+        .badge-count {
+            background: var(--yellow-light);
+            color: var(--yellow-dark);
+            padding: 8px 24px;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: 1px solid #fde68a;
+        }
+
+        /* Table Card */
+        .table-card {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+            min-height: 400px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+
+        th {
+            background: var(--white);
+            padding: 20px 24px;
+            color: var(--text-gray);
+            font-weight: 700;
+            font-size: 0.95rem;
+            border-bottom: 2px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: #f9fafb;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .type-badge {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+        
+        .type-entry { background: #e0f2fe; color: #0284c7; }
+        .type-exit { background: #fee2e2; color: #dc2626; }
+
+        .btn-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            color: var(--text-gray);
+            transition: all 0.2s;
+            margin-left: 8px;
+        }
+
+        .btn-action:hover {
+            background: var(--bg-color);
+            color: var(--danger);
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(243, 244, 246, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--yellow-dark);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 768px) {
+            .header-card {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            .header-right {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading -->
+    <div id="loader" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header Card -->
+        <div class="header-card">
+            <div class="header-right">
+                <div class="header-icon">
+                    <i class="fas fa-file-signature"></i>
+                </div>
+                <div class="header-text">
+                    <h1>لوحة تصريح دخول/خروج المواد</h1>
+                    <p>متابعة وعرض طلبات الاستمارات بشكل حي ومباشر</p>
+                </div>
+            </div>
+            
+            <div class="header-left">
+                <div class="badge-status">
+                    <div class="status-dot"></div>
+                    متصل
+                </div>
+                <div class="badge-count" id="formsCountBadge">
+                    عدد الاستمارات: 0
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="table-card">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ت</th>
+                            <th>تاريخ التقديم</th>
+                            <th>نوع العملية</th>
+                            <th>مقدم الطلب (المخول)</th>
+                            <th>السائق</th>
+                            <th>العجلة / الجهة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Empty state will be here initially -->
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">لا توجد استمارات مسجلة حالياً</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // إعدادات Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDBO0Wm5WZGZp85yXdkBnj44DntyPSJnvM",
+            authDomain: "ekhrag-b4100.firebaseapp.com",
+            projectId: "ekhrag-b4100",
+            storageBucket: "ekhrag-b4100.firebasestorage.app",
+            messagingSenderId: "198672841292",
+            appId: "1:198672841292:web:2d491c6bf2801121fb52e9",
+            measurementId: "G-00QNKK2FB3"
+        };
+
+        // تهيئة Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        const tableBody = document.getElementById('tableBody');
+        const formsCountBadge = document.getElementById('formsCountBadge');
+        const loader = document.getElementById('loader');
+
+        // جلب البيانات بالوقت الفعلي
+        db.collection("ministry_employees")
+          .orderBy("timestamp", "desc")
+          .onSnapshot((querySnapshot) => {
+            
+            const count = querySnapshot.size;
+            formsCountBadge.innerText = `عدد الاستمارات: ${count}`;
+            
+            if (count === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">لا توجد استمارات مسجلة حالياً</div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tableBody.innerHTML = ''; // مسح المحتوى الحالي
+                let index = 1;
+                
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const id = doc.id;
+                    
+                    const tr = document.createElement('tr');
+                    
+                    // معالجة التاريخ
+                    let dateStr = data.date || '-';
+                    if (data.timestamp && data.timestamp.toDate) {
+                        const d = data.timestamp.toDate();
+                        dateStr = d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'numeric', day: 'numeric' }) + ' ' + d.toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'});
+                    }
+
+                    // نوع العملية
+                    let typeHtml = '';
+                    if (data.entryExit === 'entry') {
+                        typeHtml = '<span class="type-badge type-entry">إدخال مواد</span>';
+                    } else if (data.entryExit === 'exit') {
+                        typeHtml = '<span class="type-badge type-exit">إخراج مواد</span>';
+                    } else {
+                        typeHtml = '<span class="type-badge" style="background:#f3f4f6;">غير محدد</span>';
+                    }
+
+                    tr.innerHTML = `
+                        <td>${index}</td>
+                        <td>${dateStr}</td>
+                        <td>${typeHtml}</td>
+                        <td>${data.fullname || '-'}</td>
+                        <td>${data.jobtitle ? data.jobtitle.replace('السائق: ', '') : '-'}</td>
+                        <td>${data.department || '-'}</td>
+                        <td>
+                            <button class="btn-action" title="عرض" onclick="viewRecord('${id}')"><i class="fas fa-eye"></i></button>
+                            <button class="btn-action" title="حذف" onclick="deleteRecord('${id}')"><i class="fas fa-trash-alt"></i></button>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(tr);
+                    index++;
+                });
+            }
+
+            loader.classList.add('hidden');
+        }, (error) => {
+            console.error("خطأ في جلب البيانات:", error);
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state" style="color:var(--danger)">حدث خطأ في الاتصال بقاعدة البيانات</div>
+                    </td>
+                </tr>
+            `;
+            loader.classList.add('hidden');
+        });
+
+        // دوال الإجراءات
+        window.deleteRecord = function(id) {
+            if(confirm("هل أنت متأكد من حذف هذه الاستمارة نهائياً؟")) {
+                db.collection("ministry_employees").doc(id).delete().catch((error) => {
+                    alert("حدث خطأ أثناء الحذف.");
+                });
+            }
+        };
+
+        window.viewRecord = function(id) {
+            window.open('index.html?id=' + id, '_blank');
+        };
+
+    </script>
+</body>
+</html>
